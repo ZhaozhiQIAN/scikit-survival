@@ -62,9 +62,11 @@ class StepFunction:
         x = numpy.atleast_1d(x)
         if not numpy.isfinite(x).all():
             raise ValueError("x must be finite")
-        if numpy.min(x) < self.x[0] or numpy.max(x) > self.x[-1]:
-            raise ValueError(
-                "x must be within [%f; %f]" % (self.x[0], self.x[-1]))
+        if numpy.min(x) < self.x[0]:
+            return self.a * self.y[0] + self.b
+        if numpy.max(x) > self.x[-1]:
+            return self.a * self.y[-1] + self.b
+
         i = numpy.searchsorted(self.x, x, side='left')
         not_exact = self.x[i] != x
         i[not_exact] -= 1
