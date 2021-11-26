@@ -290,6 +290,19 @@ def nelson_aalen_estimator(event, time):
     return uniq_times, y
 
 
+def nelson_aalen_estimator_boot(event, time, boot_itr=500):
+    uniq_times, y = nelson_aalen_estimator(event, time)
+    y_boot_list = []
+    for i in range(boot_itr):
+        event_boot = numpy.random.choice(event, len(event), replace=True)
+        time_boot = numpy.random.choice(time, len(event), replace=True)
+        uniq_times_boot, y_boot = nelson_aalen_estimator(event_boot, time_boot)
+        y_boot_list.append(StepFunction(uniq_times_boot, y_boot)(uniq_times))
+    y_boot = numpy.stack(y_boot_list, axis=1)
+    y_sd = numpy.std(y_boot, axis=1)
+    return uniq_times, y, y_sd
+
+
 def ipc_weights(event, time):
     """Compute inverse probability of censoring weights
 

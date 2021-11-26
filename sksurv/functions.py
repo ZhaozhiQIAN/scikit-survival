@@ -41,8 +41,8 @@ class StepFunction:
     """
     def __init__(self, x, y, a=1., b=0.):
         check_consistent_length(x, y)
-        self.x = x
-        self.y = y
+        self.x = numpy.concatenate((numpy.array([-1000000]), x, numpy.array([1000000])))
+        self.y = numpy.concatenate((numpy.array([y[0]]), y, numpy.array([y[-1]])))
         self.a = a
         self.b = b
 
@@ -62,10 +62,6 @@ class StepFunction:
         x = numpy.atleast_1d(x)
         if not numpy.isfinite(x).all():
             raise ValueError("x must be finite")
-        if numpy.min(x) < self.x[0]:
-            return self.a * self.y[0] + self.b
-        if numpy.max(x) > self.x[-1]:
-            return self.a * self.y[-1] + self.b
 
         i = numpy.searchsorted(self.x, x, side='left')
         not_exact = self.x[i] != x
